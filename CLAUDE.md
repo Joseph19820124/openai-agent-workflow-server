@@ -14,18 +14,22 @@ npm run dev          # Run with ts-node for development
 ## Environment Variables
 
 Required in `.env` (see `.env.example`):
-- `OPENAI_API_KEY` - OpenAI API key for agent
+- `LLM_API_KEY` - API key for LLM provider
+- `LLM_BASE_URL` - API base URL (default: `https://api.openai.com/v1`)
+- `LLM_MODEL` - Model to use (default: `gpt-4o-mini`)
 - `GITHUB_TOKEN` - GitHub token for API operations
 - `GITHUB_WEBHOOK_SECRET` - Secret for webhook signature verification
 - `PORT` - Server port (default: 3000)
 
+Supports OpenAI, OpenRouter, or any OpenAI-compatible API.
+
 ## Architecture
 
-This is an Agent Workflow Server that processes GitHub webhooks using OpenAI's function calling.
+This is an Agent Workflow Server that processes GitHub webhooks using LLM function calling (OpenAI-compatible API).
 
 **Request Flow:**
 ```
-GitHub Webhook → routes/webhook.ts → AgentRunner → OpenAI API → GitHubTools → Response
+GitHub Webhook → routes/webhook.ts → AgentRunner → LLM API → GitHubTools → Response
 ```
 
 **Key Design Principle:** Agent (decision layer) is separated from Tools (execution layer). Skills provide knowledge/instructions that guide the Agent's decisions.

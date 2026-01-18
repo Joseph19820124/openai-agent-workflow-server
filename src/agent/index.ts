@@ -16,7 +16,8 @@ export class AgentRunner {
 
   constructor() {
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: process.env.LLM_API_KEY,
+      baseURL: process.env.LLM_BASE_URL || 'https://api.openai.com/v1',
     });
     this.skillsLoader = new SkillsLoader();
     this.githubTools = new GitHubTools();
@@ -188,7 +189,7 @@ Zen: ${p.zen}`;
       iteration++;
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: process.env.LLM_MODEL || 'gpt-4o-mini',
         messages,
         tools,
         tool_choice: 'auto'
