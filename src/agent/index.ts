@@ -189,7 +189,7 @@ Zen: ${p.zen}`;
       iteration++;
 
       const response = await this.openai.chat.completions.create({
-        model: process.env.LLM_MODEL || 'gpt-4o-mini',
+        model: process.env.LLM_MODEL || 'openai/gpt-5.2-codex',
         messages,
         tools,
         tool_choice: 'auto'
