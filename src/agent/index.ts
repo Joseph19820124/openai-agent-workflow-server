@@ -187,6 +187,7 @@ Zen: ${p.zen}`;
 
     while (iteration < maxIterations) {
       iteration++;
+      console.log(`Agent loop iteration ${iteration}/${maxIterations}`);
 
       const response = await this.openai.chat.completions.create({
         model: process.env.LLM_MODEL || 'openai/gpt-5.2-codex',
@@ -196,12 +197,16 @@ Zen: ${p.zen}`;
       });
 
       const assistantMessage = response.choices[0].message;
+      console.log(`LLM response received. Content: ${assistantMessage.content?.substring(0, 200) || '(no content)'}`);
+      console.log(`Tool calls: ${assistantMessage.tool_calls?.length || 0}`);
       messages.push(assistantMessage);
 
       // Check if agent wants to use tools
       if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
         for (const toolCall of assistantMessage.tool_calls) {
+          console.log(`Executing tool: ${toolCall.function.name}`);
           const args = JSON.parse(toolCall.function.arguments);
+          console.log(`Tool args: ${JSON.stringify(args)}`);
           let result: unknown;
 
           try {
@@ -234,9 +239,11 @@ Zen: ${p.zen}`;
                 result = { error: `Unknown tool: ${toolCall.function.name}` };
             }
           } catch (error) {
+            console.error(`Tool execution error: ${error instanceof Error ? error.message : 'Unknown error'}`);
             result = { error: error instanceof Error ? error.message : 'Unknown error' };
           }
 
+          console.log(`Tool result: ${JSON.stringify(result)}`);
           actions.push({
             tool: toolCall.function.name,
             args,
@@ -251,6 +258,7 @@ Zen: ${p.zen}`;
         }
       } else {
         // No more tool calls, agent is done
+        console.log(`Agent completed after ${iteration} iterations with ${actions.length} actions`);
         return {
           message: assistantMessage.content,
           actions,
@@ -259,6 +267,7 @@ Zen: ${p.zen}`;
       }
     }
 
+    console.log(`Agent reached max iterations (${maxIterations}) with ${actions.length} actions`);
     return {
       message: 'Max iterations reached',
       actions,
