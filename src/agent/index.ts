@@ -181,7 +181,7 @@ Zen: ${p.zen}`;
       { role: 'user', content: userMessage }
     ];
 
-    const maxIterations = 5;
+    const maxIterations = parseInt(process.env.AGENT_MAX_ITERATIONS || '10', 10);
     let iteration = 0;
     const actions: Record<string, unknown>[] = [];
 
